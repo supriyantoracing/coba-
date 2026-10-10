@@ -1,0 +1,625 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Akun</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', sans-serif;
+        }
+
+        body {
+            background-color: #000;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* HEADER */
+        .header-section {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 40px;
+            margin-top: 20px;
+            position: relative;
+        }
+
+        .profile-icon {
+            width: 100px;
+            height: 100px;
+            border: 4px solid #fff;
+            border-radius: 50% 40% 50% 40% / 40% 50% 40% 50%;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: -20px;
+            z-index: 2;
+            background-color: #222;
+            position: relative;
+        }
+
+        .profile-icon img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* 3 TITIK DI PROFIL */
+        .profile-dots {
+            position: absolute;
+            top: 0;
+            right: 0;
+            background: rgba(0, 0, 0, 0.7);
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            width: 26px;
+            height: 26px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            padding-bottom: 7px;
+            z-index: 10;
+        }
+
+        .profile-dots:hover {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .brand-name {
+            font-size: 3rem;
+            font-weight: bold;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            transform: rotate(-5deg);
+            z-index: 1;
+        }
+
+        /* MENU KOTAK */
+        .menu-container {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            width: 100%;
+            max-width: 350px;
+        }
+
+        .menu-box {
+            width: 100%;
+            height: 80px;
+            border: 4px solid #fff;
+            background: transparent;
+            color: #fff;
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-transform: uppercase;
+            border-radius: 10px 5px 15px 5px;
+        }
+
+        .menu-box:hover {
+            background-color: #fff;
+            color: #000;
+            transform: scale(1.02);
+        }
+
+        /* MODAL */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.95);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .modal-content {
+            background-color: #000;
+            border: 4px solid #fff;
+            border-radius: 20px;
+            width: 100%;
+            max-width: 900px;
+            padding: 20px;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            border-bottom: 2px dashed #fff;
+            padding-bottom: 10px;
+        }
+
+        .modal-title {
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: #fff;
+            font-size: 2rem;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* GRID */
+        .stock-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 10px;
+        }
+
+        .stock-item {
+            aspect-ratio: 9/16;
+            border: 2px dashed #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            background-color: #1a1a1a;
+            cursor: pointer;
+            transition: transform 0.2s;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stock-item:hover {
+            transform: scale(1.03);
+            border-color: #00ff00;
+        }
+
+        .stock-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        .stock-item .dots-btn {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(0, 0, 0, 0.6);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            font-size: 20px;
+            font-weight: bold;
+            padding-bottom: 8px;
+            z-index: 5;
+        }
+
+        .stock-item .dots-btn:hover {
+            background: rgba(0, 255, 0, 0.8);
+        }
+
+        .stock-item .delete-btn {
+            position: absolute;
+            top: 40px;
+            right: 6px;
+            background: rgba(255, 0, 0, 0.9);
+            color: #fff;
+            border: 2px solid #fff;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 14px;
+            cursor: pointer;
+            display: none;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            z-index: 6;
+        }
+
+        .stock-item.show-delete .delete-btn {
+            display: flex;
+        }
+
+        /* WHATSAPP */
+        .wa-section {
+            margin-top: 25px;
+            text-align: center;
+            border-top: 2px dashed #fff;
+            padding-top: 20px;
+        }
+
+        .wa-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            background-color: #25D366;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            font-size: 1.1rem;
+            padding: 12px 25px;
+            border-radius: 12px 5px 12px 5px;
+            border: 3px solid #fff;
+            transition: transform 0.2s;
+        }
+
+        .wa-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 0 15px #25D366;
+        }
+
+        .wa-btn svg {
+            width: 24px;
+            height: 24px;
+            fill: #fff;
+        }
+
+        /* LIGHTBOX */
+        .lightbox {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            padding: 20px;
+        }
+
+        .lightbox img {
+            max-width: 95%;
+            max-height: 75vh;
+            object-fit: contain;
+            border: 4px solid #fff;
+            border-radius: 10px;
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #ff0000;
+            color: #fff;
+            border: 3px solid #fff;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .lightbox-order {
+            margin-top: 20px;
+            background-color: #25D366;
+            color: #fff;
+            text-decoration: none;
+            font-weight: bold;
+            padding: 15px 35px;
+            border-radius: 12px;
+            border: 3px solid #fff;
+            font-size: 1.1rem;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            animation: pulse 1.5s infinite;
+        }
+
+        .lightbox-order svg {
+            width: 22px;
+            height: 22px;
+            fill: #fff;
+        }
+
+        @keyframes pulse {
+            0%, 100% { box-shadow: 0 0 0 0 rgba(37, 211, 102, 0.7); }
+            50% { box-shadow: 0 0 0 10px rgba(37, 211, 102, 0); }
+        }
+
+        /* ============ MENU DROPDOWN PROFIL ============ */
+        .profile-menu {
+            display: none;
+            position: fixed;
+            background: #000;
+            border: 3px solid #fff;
+            border-radius: 12px;
+            padding: 8px;
+            z-index: 3000;
+            min-width: 180px;
+            box-shadow: 0 0 20px rgba(255,255,255,0.3);
+        }
+
+        .profile-menu.show {
+            display: block;
+        }
+
+        .profile-menu button {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            width: 100%;
+            background: transparent;
+            color: #fff;
+            border: none;
+            padding: 12px 15px;
+            font-size: 1rem;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 8px;
+            text-align: left;
+            transition: background 0.2s;
+            font-family: inherit;
+        }
+
+        .profile-menu button:hover {
+            background: #00ff00;
+            color: #000;
+        }
+
+        .profile-menu button + button {
+            border-top: 1px dashed #444;
+            margin-top: 4px;
+        }
+
+        /* Popup Edit Nama */
+        .name-popup {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.9);
+            z-index: 4000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .name-popup.show {
+            display: flex;
+        }
+
+        .name-popup-box {
+            background: #000;
+            border: 4px solid #fff;
+            border-radius: 15px;
+            padding: 25px;
+            width: 90%;
+            max-width: 400px;
+            text-align: center;
+        }
+
+        .name-popup-box h3 {
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .name-popup-box input {
+            width: 100%;
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 3px solid #fff;
+            border-radius: 10px;
+            background: #222;
+            color: #fff;
+            font-family: inherit;
+            text-align: center;
+            outline: none;
+            font-weight: bold;
+        }
+
+        .name-popup-box input:focus {
+            border-color: #00ff00;
+        }
+
+        .name-popup-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .name-popup-actions button {
+            flex: 1;
+            padding: 12px;
+            font-size: 1rem;
+            font-weight: bold;
+            border-radius: 10px;
+            border: 3px solid #fff;
+            cursor: pointer;
+            font-family: inherit;
+        }
+
+        .btn-save {
+            background: #25D366;
+            color: #fff;
+        }
+
+        .btn-cancel {
+            background: #444;
+            color: #fff;
+        }
+
+        .info-text {
+            text-align: center;
+            margin-top: 15px;
+            font-size: 0.85rem;
+            color: #888;
+        }
+
+        /* RESPONSIF */
+        @media (max-width: 600px) {
+            .brand-name { font-size: 2rem; }
+            .profile-icon { width: 70px; height: 70px; }
+            .stock-grid { grid-template-columns: repeat(2, 1fr); }
+            .menu-box { height: 60px; font-size: 1.2rem; }
+            .modal-title { font-size: 1.2rem; }
+            .lightbox-order { font-size: 1rem; padding: 12px 25px; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- HEADER -->
+    <div class="header-section">
+        <div class="profile-icon">
+            <img id="profileImg" src="" alt="Profile" style="display:none;">
+            <span id="profilePlaceholder" style="color:#666; font-size:2rem;">+</span>
+            <button class="profile-dots" onclick="toggleProfileMenu(event)">⋮</button>
+        </div>
+        <div class="brand-name" id="brandName">NAMA</div>
+    </div>
+
+    <!-- MENU DROPDOWN PROFIL -->
+    <div class="profile-menu" id="profileMenu">
+        <button onclick="uploadProfile()">📷 Ganti Foto</button>
+        <button onclick="openNamePopup()">✏️ Ganti Nama</button>
+    </div>
+
+    <!-- POPUP EDIT NAMA -->
+    <div class="name-popup" id="namePopup">
+        <div class="name-popup-box">
+            <h3>✏️ Ganti Nama Brand</h3>
+            <input type="text" id="nameInput" placeholder="Masukkan nama baru..." maxlength="20">
+            <div class="name-popup-actions">
+                <button class="btn-cancel" onclick="closeNamePopup()">Batal</button>
+                <button class="btn-save" onclick="saveName()">Simpan</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MENU -->
+    <div class="menu-container">
+        <div class="menu-box" onclick="openModal('ff')">STOCK FF</div>
+        <div class="menu-box" onclick="openModal('ml')">STOCK ML</div>
+        <div class="menu-box" onclick="openModal('tiktok')">STOCK TIKTOK</div>
+    </div>
+
+    <!-- MODAL -->
+    <div class="modal" id="stockModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">Judul</div>
+                <button class="close-btn" onclick="closeModal()">&times;</button>
+            </div>
+
+            <div class="stock-grid" id="grid-ff"></div>
+            <div class="stock-grid" id="grid-ml" style="display:none;"></div>
+            <div class="stock-grid" id="grid-tiktok" style="display:none;"></div>
+
+            <div class="wa-section">
+                <a href="#" target="_blank" class="wa-btn" id="waOrderBtn">
+                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+                    </svg>
+                    Order via WhatsApp
+                </a>
+            </div>
+
+            <div class="info-text">
+                💡 Klik slot untuk upload foto • Klik foto untuk lihat besar • Klik 3 titik (⋮) untuk hapus
+            </div>
+        </div>
+    </div>
+
+    <!-- LIGHTBOX -->
+    <div class="lightbox" id="lightbox">
+        <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+        <img id="lightboxImg" src="" alt="Preview">
+        <a href="#" target="_blank" class="lightbox-order" id="lightboxOrderBtn">
+            <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+            </svg>
+            Order Sekarang
+        </a>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+
+    <script>
+        // ================== KONFIGURASI NOMOR WA ==================
+        const NOMOR_WA = "6285895196739";
+        const PESAN_WA = "bg saya mau order stock 1, 2, 3, 4, 5";
+        // ==========================================================
+
+        const WA_LINK = `https://wa.me/${NOMOR_WA}?text=${encodeURIComponent(PESAN_WA)}`;
+        document.getElementById('waOrderBtn').href = WA_LINK;
+        document.getElementById('lightboxOrderBtn').href = WA_LINK;
+
+        const categories = {
+            ff: { title: 'STOCK FF', slots: 5 },
+            ml: { title: 'STOCK ML', slots: 5 },
+            tiktok: { title: 'STOCK TIKTOK', slots: 5 }
+        };
+
+        let currentSlot = null;
+        let currentCategory = null;
+
+        // ============== MENU DROPDOWN PROFIL ==============
+        function toggleProfileMenu(e) {
+            e.stopPropagation();
+            const menu = document.getElementById('profileMenu');
+            const btn = e.currentTarget;
+            const rect = btn.getBoundingClientRect();
+
+            // Posisi menu di bawah tombol
+            menu.style.top = (rect.bottom + 8) + 'px';
+            menu.style.left = (rect.left - 150) + 'px';
+
+            menu.classList.toggle('show');
+        }
+
+        // Tutup menu jika klik di luar
+        document.addEventListener('click', function(e) {
+            const menu = document.getElementById('profileMenu');
+            if (!menu.contains(e.target) && !e.target.classList.contains('profile-dots')) {
+                menu.classList.remove('show');
+            }
+        });
+
+        // ============== POPUP EDIT NAMA ==============
+        function openNamePopup() {
+            document.getElementById('profileMenu').classList.remove('show');
+            const currentName = document.getElementById('brandName').innerText;
+            document.getElementById('nameInput').value = currentName;
+            document.getElementById('namePopup').classList.add('show');
+            setTimeout(() => document.getElementById('nameInput').focus(), 100);
+        }
+
+        function closeNamePopup() {
+            docu
